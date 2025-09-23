@@ -1,0 +1,52 @@
+{
+  "name": "solana-sbt-implementation",
+  "version": "1.0.0",
+  "description": "Complete Solana Soul-Bound Token (SBT) implementation using Metaplex Umi and MPL Core with GitHub Pages hosting",
+  "type": "module",
+  "main": "src/corrected_sbt_logic.mjs",
+  "scripts": {
+    "setup": "./scripts/setup.sh",
+    "create-sbt": "node src/corrected_sbt_logic.mjs",
+    "verify-sbt": "node src/sbt_verification.mjs",
+    "test": "npm run create-sbt && npm run verify-sbt",
+    "start": "npm run create-sbt",
+    "check-urls": "node scripts/check_github_urls.mjs"
+  },
+  "keywords": [
+    "solana",
+    "sbt",
+    "soul-bound-token",
+    "nft",
+    "metaplex",
+    "umi",
+    "mpl-core",
+    "blockchain",
+    "non-transferable",
+    "devnet",
+    "github-pages"
+  ],
+  "author": "denniszweigle",
+  "license": "MIT",
+  "dependencies": {
+    "@metaplex-foundation/mpl-core": "^1.0.0",
+    "@metaplex-foundation/umi": "^0.9.0",
+    "@metaplex-foundation/umi-bundle-defaults": "^0.9.0",
+    "@solana/web3.js": "^1.95.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/denniszweigle/solana-sbt-implementation.git"
+  },
+  "bugs": {
+    "url": "https://github.com/denniszweigle/solana-sbt-implementation/issues"
+  },
+  "homepage": "https://github.com/denniszweigle/solana-sbt-implementation#readme",
+  "config": {
+    "github_username": "denniszweigle",
+    "assets_repo": "solana-sbt-assets",
+    "network": "devnet"
+  }
+}
