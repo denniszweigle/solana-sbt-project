@@ -40,7 +40,7 @@ echo "👤 GitHub Username: denniszweigle"
 echo "📁 Assets Repository: solana-sbt-assets"
 echo "🌐 Network: Solana Devnet"
 echo "🔗 Expected Image URL: https://denniszweigle.github.io/solana-sbt-assets/images/pog-token.png"
-echo "🔗 Expected Metadata URL: https://denniszweigle.github.io/solana-sbt-assets/metadata/pog-metadata.json"
+echo "🔗 Expected Metadata URL: https://denniszweigle.github.io/solana-sbt-assets/metadata/metadata.json"
 echo ""
 
 # Check if GitHub repository is set up

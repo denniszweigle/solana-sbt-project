@@ -1,43 +1,42 @@
-# Solana Soul-Bound Token (SBT) Implementation
+# Revocable Solana Soul-Bound Token (SBT) Implementation
 
 **Configured for:** denniszweigle | **Network:** Solana Devnet | **Hosting:** GitHub Pages | **WSL Compatible**
 
 ## 🎯 Project Overview
 
-This project provides a complete implementation for creating Solana Soul-Bound Tokens (SBTs) using the Metaplex Umi framework and MPL Core standard. It's specifically configured for **denniszweigle** with GitHub Pages hosting and **Windows WSL compatibility**.
+This project provides a complete implementation for creating **revocable** Solana Soul-Bound Tokens (SBTs) using the Metaplex Umi framework and MPL Core standard. It's specifically configured for **denniszweigle** with GitHub Pages hosting and **Windows WSL compatibility**.
 
 ### ✨ Key Features
 
+- ✅ **Revocable SBTs** - Issuer can burn tokens for violations
+- ✅ **Soul-Bound Nature** - Non-transferable by holders
+- ✅ **Governance Control** - Enforce agreement compliance
 - ✅ **Windows WSL Compatible** - Fixed permission issues
-- ✅ **Fixed EddsaInterface Error** - Uses proper `umi-bundle-defaults`
-- ✅ **Solana Devnet Ready** - Free testing environment
 - ✅ **GitHub Pages Integration** - Free, permanent hosting
-- ✅ **Custom Metadata Fields** - fName, lName, clickable URLs
-- ✅ **Non-transferable Tokens** - True Soul-Bound behavior
-- ✅ **Verification System** - Automated testing
+- ✅ **Custom Metadata Fields** - Comprehensive governance data
+- ✅ **Oracle Plugin** - Advanced lifecycle control
 
 ### 🔗 Configured URLs
 
 - **Image**: `https://denniszweigle.github.io/solana-sbt-assets/images/pog-token.png`
-- **Metadata**: `https://denniszweigle.github.io/solana-sbt-assets/metadata/pog-metadata.json`
-- **Token URL**: [https://www.tradebot.cash](https://www.tradebot.cash)
-- **POG URL**: [https://www.proofofgovernance.com](https://www.proofofgovernance.com)
+- **Metadata**: `https://denniszweigle.github.io/solana-sbt-assets/metadata/metadata.json`
+- **External URL**: [https://www.proofofgovernance.com](https://www.proofofgovernance.com)
 
 ## 🚀 Quick Start
 
-### 1. Setup Dependencies
+### 1. Install Dependencies (WSL Compatible)
 ```bash
-npm run setup
+npm install --no-bin-links
 ```
 
-### 2. Setup GitHub Repository (First Time Only)
+### 2. Setup GitHub Pages Assets
 Follow the detailed guide in `GITHUB_SETUP_GUIDE.md` to:
 - Create `solana-sbt-assets` repository
 - Upload your POG token image
 - Enable GitHub Pages
 - Verify URLs are working
 
-### 3. Create Your SBT
+### 3. Create Your Revocable SBT
 ```bash
 npm run create-sbt
 ```
@@ -47,52 +46,68 @@ npm run create-sbt
 npm run verify-sbt
 ```
 
+### 5. Burn/Revoke SBT (When Needed)
+```bash
+npm run burn-sbt
+```
+
 ## 📁 Project Structure
 
 ```
 solana-sbt-project/
 ├── src/
-│   ├── corrected_sbt_logic.mjs     # Main SBT creation (devnet)
-│   └── sbt_verification.mjs        # Transfer verification
+│   ├── corrected_sbt_logic.mjs     # Revocable SBT creation
+│   ├── sbt_verification.mjs        # Transfer verification
+│   └── burn_sbt.mjs               # Token revocation
 ├── scripts/
 │   ├── setup.sh                    # Automated setup
 │   └── check_github_urls.mjs       # URL verification
 ├── assets/
 │   └── metadata/
-│       └── pog-metadata.json       # Template metadata
+│       └── metadata.json           # Governance metadata
 ├── docs/                           # Documentation
-├── GITHUB_SETUP_GUIDE.md          # GitHub setup instructions
 └── README.md                       # This file
 ```
 
-## 🔧 Configuration Details
+## 🔧 Revocable SBT Features
 
-### Network Configuration
-- **Blockchain**: Solana
-- **Network**: Devnet (free testing)
-- **Cluster URL**: `https://api.devnet.solana.com`
-- **Explorer**: `https://explorer.solana.com/?cluster=devnet`
+### For Token Holders:
+- ✅ **Proves governance eligibility**
+- ❌ **Cannot transfer** the token (Soul-Bound)
+- ❌ **Cannot burn** their own token
+- ✅ **Permanent record** (unless revoked for violations)
 
-### GitHub Pages Setup
-- **Username**: denniszweigle
-- **Repository**: solana-sbt-assets
-- **Base URL**: `https://denniszweigle.github.io/solana-sbt-assets/`
+### For Issuer (You):
+- ✅ **Can burn** any token you issued
+- ✅ **Can revoke** for violations
+- ✅ **Maintain governance standards**
+- ✅ **Enforce agreement compliance**
 
-### Metadata Fields
-The SBT includes these custom fields:
-- **fName**: First name of token holder
-- **lName**: Last name of token holder  
-- **TokenURL**: Clickable link to https://www.tradebot.cash
-- **PogURL**: Clickable link to https://www.proofofgovernance.com
+## 🔥 When to Burn/Revoke Tokens
+
+### Valid Reasons:
+- **Agreement Violation**: Breach of governance terms
+- **Misconduct**: Inappropriate behavior in governance
+- **Eligibility Loss**: No longer meets requirements
+- **Fraud**: Token obtained through false information
+- **Expiration**: Time-limited governance rights
+
+### Revocation Process:
+1. **Document Violation**: Record the breach
+2. **Issue Warning**: Give holder chance to correct (optional)
+3. **Update burn_sbt.mjs**: Add SBT address and authority key
+4. **Execute Burn**: Run `npm run burn-sbt`
+5. **Update Records**: Maintain governance integrity
 
 ## 📋 Available Commands
 
 | Command | Description |
 |---------|-------------|
-| `npm run setup` | Install dependencies and check configuration |
-| `npm run create-sbt` | Create a new SBT on Solana devnet |
-| `npm run verify-sbt` | Verify the SBT is non-transferable |
+| `npm install --no-bin-links` | Install dependencies (WSL compatible) |
 | `npm run check-urls` | Verify GitHub Pages URLs are working |
+| `npm run create-sbt` | Create a new revocable SBT on Solana devnet |
+| `npm run verify-sbt` | Verify the SBT is non-transferable |
+| `npm run burn-sbt` | Burn/revoke an SBT for violations |
 | `npm run test` | Run creation and verification together |
 
 ## 🔍 Verification Process
@@ -100,14 +115,43 @@ The SBT includes these custom fields:
 The verification script confirms your SBT is properly configured by:
 
 1. **Attempting Transfer** - Tries to send the SBT to another wallet
-2. **Expecting Failure** - Transfer should be rejected due to freeze
+2. **Expecting Failure** - Transfer should be rejected due to Oracle Plugin
 3. **Confirming Soul-Bound** - Validates non-transferable behavior
 
 Expected output: `✅ SUCCESS: The SBT is properly non-transferable!`
 
+## 📄 Metadata Fields
+
+Your SBT includes comprehensive governance data:
+
+### Core Fields:
+- **Company/Project Name**: Official organization name
+- **Verification Tier**: Iron (expandable to Bronze, Silver, Gold)
+- **Token Contract Address**: Primary smart contract
+- **Treasury Wallet**: Multi-sig treasury address
+- **Website URL**: Official domain
+
+### Compliance Fields:
+- **Audit Report Hash**: IPFS hash of audit reports
+- **Governance Framework Hash**: IPFS hash of governance docs
+- **Issue/Expiry Dates**: Verification timeline
+- **Social Media URLs**: Verified accounts
+
+### Technical Fields:
+- **Transferable**: No (Soul-Bound)
+- **Burnable**: Yes - By Authority Only
+- **Network**: Solana Devnet
+- **Standard**: MPL Core
+
 ## 🆘 Troubleshooting
 
-### GitHub Pages URLs Not Working
+### WSL Permission Issues:
+```bash
+# Use WSL-compatible installation
+npm install --no-bin-links
+```
+
+### GitHub Pages URLs Not Working:
 ```bash
 # Check if URLs are accessible
 npm run check-urls
@@ -115,70 +159,62 @@ npm run check-urls
 # If failing, follow GITHUB_SETUP_GUIDE.md
 ```
 
-### SBT Creation Fails
-Common issues and solutions:
-
-**Metadata URL Error**
-- Ensure GitHub Pages is enabled
+### SBT Creation Fails:
+- Ensure GitHub Pages is enabled and working
 - Wait 2-5 minutes after enabling Pages
-- Verify files are in correct directories
+- Verify metadata file is uploaded correctly
 
-**Airdrop Fails**
-- Normal on devnet, script will continue
-- You may already have sufficient SOL
-
-**Network Connection**
-- Check internet connection
-- Verify devnet is accessible
-
-### Verification Script Issues
-- Update `sbtMintAddress` with actual SBT address
-- Update `payerSecretKey` with actual secret key array
+### Burn Script Issues:
+- Update `SBT_ADDRESS` with actual token address
+- Update `AUTHORITY_SECRET_KEY` with issuer secret key
 - Both values are provided by the creation script
 
 ## 🔒 Security Notes
 
-### For Testing (Current Setup)
+### For Testing (Current Setup):
 - Uses Solana devnet (no real value)
 - Generates new keypairs each run
 - Safe for experimentation
 
-### For Production
+### For Production:
 - Switch to mainnet-beta
 - Use secure key management
 - Remove airdrop functionality
-- Use permanent storage (Arweave)
+- Implement proper governance procedures
 
 ## 📖 Additional Documentation
 
 - **`GITHUB_SETUP_GUIDE.md`** - Complete VS Code terminal setup
 - **`docs/TECHNICAL_GUIDE.md`** - Technical implementation details
-- **`assets/metadata/pog-metadata.json`** - Metadata template
+- **`REVOCABLE_SBT_GUIDE.md`** - Revocation policy framework
 
 ## 🎯 What Makes This SBT Special
 
-1. **Soul-Bound Nature** - Cannot be transferred once created
-2. **Permanent Freeze** - Uses MPL Core PermanentFreezeDelegate
-3. **Custom Fields** - Includes personal and URL information
-4. **Devnet Safe** - Free testing environment
-5. **GitHub Hosted** - Reliable, free asset hosting
+1. **Soul-Bound Nature** - Cannot be transferred by holders
+2. **Revocable Authority** - Issuer can burn for violations
+3. **Governance Control** - Enforces agreement compliance
+4. **Comprehensive Metadata** - Rich governance information
+5. **Oracle Plugin** - Advanced lifecycle management
+6. **WSL Compatible** - Works on Windows development environments
 
 ## ✅ Success Indicators
 
 When everything is working correctly:
 
-1. **Setup**: `npm run setup` shows all URLs working
-2. **Creation**: SBT created with transaction link
-3. **Verification**: Transfer attempt properly rejected
-4. **Explorer**: Token visible on Solana Explorer (devnet)
+1. **Install**: `npm install --no-bin-links` completes without errors
+2. **URLs**: `npm run check-urls` shows all URLs working
+3. **Creation**: SBT created with transaction link
+4. **Verification**: Transfer attempt properly rejected
+5. **Revocation**: Burn script works when needed
+6. **Explorer**: Token visible on Solana Explorer (devnet)
 
-## 🎉 Ready to Go!
+## 🎉 Ready for Governance!
 
-Your project is configured and ready. Follow these steps:
+Your project is configured for comprehensive governance token management:
 
-1. Run `npm run setup`
-2. Follow `GITHUB_SETUP_GUIDE.md` if URLs aren't working
-3. Run `npm run create-sbt`
-4. Run `npm run verify-sbt`
+1. **Create SBTs** for eligible participants
+2. **Verify compliance** through non-transferable nature
+3. **Revoke tokens** for violations when necessary
+4. **Maintain standards** through issuer authority
 
-Your Soul-Bound Token will be permanently tied to the generated wallet and visible on the Solana devnet explorer!
+Your Revocable Soul-Bound Token system is ready for governance enforcement!

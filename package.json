@@ -6,11 +6,12 @@
   "main": "src/corrected_sbt_logic.mjs",
   "scripts": {
     "setup": "./scripts/setup.sh",
-    "create-sbt": "node src/corrected_sbt_logic.mjs",
+    "create-sbt": "node src/sbt_logic.mjs",
     "verify-sbt": "node src/sbt_verification.mjs",
     "test": "npm run create-sbt && npm run verify-sbt",
     "start": "npm run create-sbt",
-    "check-urls": "node scripts/check_github_urls.mjs"
+    "check-urls": "node scripts/check_github_urls.mjs",
+    "burn-sbt": "node src/burn_sbt.mjs"
   },
   "keywords": [
     "solana",
@@ -22,6 +23,8 @@
     "mpl-core",
     "blockchain",
     "non-transferable",
+    "revocable",
+    "governance",
     "devnet",
     "github-pages"
   ],
@@ -38,12 +41,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/denniszweigle/solana-sbt-implementation.git"
+    "url": "https://github.com/denniszweigle/solana-sbt-project.git"
   },
   "bugs": {
     "url": "https://github.com/denniszweigle/solana-sbt-implementation/issues"
   },
-  "homepage": "https://github.com/denniszweigle/solana-sbt-implementation#readme",
+  "homepage": "https://github.com/denniszweigle/solana-sbt-project#readme",
   "config": {
     "github_username": "denniszweigle",
     "assets_repo": "solana-sbt-assets",

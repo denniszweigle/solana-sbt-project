@@ -1,0 +1,109 @@
+{
+  "name": "Proof of Governance",
+  "symbol": "POG",
+  "description": "A Soul-Bound Token representing proof of governance participation. This token is non-transferable and permanently bound to the holder's wallet, serving as immutable proof of governance engagement.",
+  "image": "https://denniszweigle.github.io/solana-sbt-assets/images/pog-token.png",
+  "external_url": "https://www.proofofgovernance.com",
+  "attributes": [
+    {
+      "trait_type": "Company/Project Name",
+      "value": "Official registered name of the organization"
+    },
+    {
+      "trait_type": "Verification Tier",
+      "value": "Iron"
+    },
+    {
+      "trait_type": "Token Contract Address",
+      "value": "Primary token smart contract address"
+    },
+    {
+      "trait_type": "Liquidity Pool (LP) Wallet Address",
+      "value": "Wallet of the main liquidity pool wallet"
+    },
+    {
+      "trait_type": "Treasury Wallet Address",
+      "value": "Multi-signature treasury wallet address"
+    },
+    {
+      "trait_type": "Company Website URL",
+      "value": "Official website domain"
+    },
+    {
+      "trait_type": "Social Media URLs",
+      "value": "Verified social media accounts (Twitter, Discord, Telegram)"
+    },
+    {
+      "trait_type": "Issue Date",
+      "value": "Timestamp of SBT issuance"
+    },
+    {
+      "trait_type": "Expiry Date",
+      "value": "Verification expiration date (renewable annually)"
+    },
+    {
+      "trait_type": "Audit Report Hash",
+      "value": "IPFS hash of smart contract audit reports"
+    },
+    {
+      "trait_type": "Governance Framework Hash",
+      "value": "IPFS hash of the governance framework document"
+    },
+    {
+      "trait_type": "Token Type",
+      "value": "Soul-Bound Token"
+    },
+    {
+      "trait_type": "Category",
+      "value": "Governance"
+    },
+    {
+      "trait_type": "Transferable",
+      "value": "No"
+    },
+    {
+      "trait_type": "Burnable",
+      "value": "Yes - By Authority Only"
+    },
+    {
+      "trait_type": "Network",
+      "value": "Solana Devnet"
+    },
+    {
+      "trait_type": "Standard",
+      "value": "MPL Core"
+    },
+    {
+      "trait_type": "Blockchain",
+      "value": "Solana"
+    }
+  ],
+  "properties": {
+    "files": [
+      {
+        "uri": "https://denniszweigle.github.io/solana-sbt-assets/images/pog-token.png",
+        "type": "image/png"
+      }
+    ],
+    "category": "image",
+    "creators": [
+      {
+        "address": "11111111111111111111111111111112",
+        "share": 100
+      }
+    ]
+  },
+  "custom_fields": {
+    "Company/Project Name": "Official registered name of the organization",
+    "Verification Tier": "Iron",
+    "Token Contract Address": "Primary token smart contract address",
+    "Liquidity Pool (LP) Wallet Address": "Wallet of the main liquidity pool wallet",
+    "Treasury Wallet Address": "Multi-signature treasury wallet address",
+    "Company Website URL": "Official website domain",
+    "Social Media URLs": "Verified social media accounts (Twitter, Discord, Telegram)",
+    "Issue Date": "Timestamp of SBT issuance",
+    "Expiry Date": "Verification expiration date (renewable annually)",
+    "Audit Report Hash": "IPFS hash of smart contract audit reports",
+    "Governance Framework Hash": "IPFS hash of the governance framework document"
+  }
+}
