@@ -100,7 +100,7 @@ async function ensureSufficientBalance(connection, publicKey, requiredSol = 0.5)
     }
 }
 
-async function createSBTWithRetry(umi, asset, metadataUri, maxAttempts = 3) {
+async function createSBTWithRetry(umi, asset, metadataUri, payerKeypair, maxAttempts = 3) {
     console.log(`🔨 Creating Soul-Bound Token (max ${maxAttempts} attempts)...`);
     
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
@@ -117,20 +117,6 @@ async function createSBTWithRetry(umi, asset, metadataUri, maxAttempts = 3) {
                 asset,
                 name: 'Proof of Governance',
                 uri: metadataUri,
-                plugins: [
-                    {
-                        type: "Royalties",
-                        basisPoints: 0,
-                        creators: [
-                            {
-                                address: payerKeypair.publicKey,
-                                verified: true,
-                                percentage: 100,
-                            },
-                        ],
-                        ruleSet: "None",
-                    },
-                ],
             }).sendAndConfirm(umi);
             
             console.log(`   ✅ Success on attempt ${attempt}!`);
@@ -232,7 +218,8 @@ async function main() {
         await new Promise(resolve => setTimeout(resolve, 3000));
 
         // 7. Create the Soul-Bound Token with retry logic
-        const createTx = await createSBTWithRetry(umi, asset, metadataUri, 3);
+        const createTx = await createSBTWithRetry(umi, asset, metadataUri, payerKeypair, 3);
+
 
         console.log('');
         console.log('🎉 Soul-Bound Token created successfully!');

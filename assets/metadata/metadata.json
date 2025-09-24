@@ -3,11 +3,11 @@
   "symbol": "POG",
   "description": "A Soul-Bound Token representing proof of governance participation. This token is non-transferable and permanently bound to the holder's wallet, serving as immutable proof of governance engagement.",
   "image": "https://denniszweigle.github.io/solana-sbt-assets/images/pog-token.png",
-  "external_url": "https://www.proofofgovernance.com",
+  "external_url": "https://www.proofofgovernance.ai",
   "attributes": [
     {
       "trait_type": "Company/Project Name",
-      "value": "Official registered name of the organization"
+      "value": "TradeBot"
     },
     {
       "trait_type": "Verification Tier",
@@ -15,19 +15,15 @@
     },
     {
       "trait_type": "Token Contract Address",
-      "value": "Primary token smart contract address"
+      "value": "GaRph5BcLZZ4sRh6EXKS6V7dicVanhcwa5iWEE6AbEYR"
     },
     {
       "trait_type": "Liquidity Pool (LP) Wallet Address",
-      "value": "Wallet of the main liquidity pool wallet"
-    },
-    {
-      "trait_type": "Treasury Wallet Address",
-      "value": "Multi-signature treasury wallet address"
+      "value": "7mLMtmVrGG9o7m9qDEEZeq4axUUrtrsRtBPCWMNLW1Y1"
     },
     {
       "trait_type": "Company Website URL",
-      "value": "Official website domain"
+      "value": "https://tradebot.cash"
     },
     {
       "trait_type": "Social Media URLs",
@@ -35,11 +31,11 @@
     },
     {
       "trait_type": "Issue Date",
-      "value": "Timestamp of SBT issuance"
+      "value": "09/23/2025T19:47:00.000"
     },
     {
       "trait_type": "Expiry Date",
-      "value": "Verification expiration date (renewable annually)"
+      "value": "09/23/2026"
     },
     {
       "trait_type": "Audit Report Hash",
@@ -51,11 +47,11 @@
     },
     {
       "trait_type": "Token Type",
-      "value": "Soul-Bound Token"
+      "value": "Meme"
     },
     {
       "trait_type": "Category",
-      "value": "Governance"
+      "value": "Governance Level 0 - IRON"
     },
     {
       "trait_type": "Transferable",
