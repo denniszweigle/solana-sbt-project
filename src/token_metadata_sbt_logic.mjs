@@ -1,14 +1,29 @@
 /**
- * Soul-Bound Token (SBT) Creation Script - Token Metadata Standard (CORRECTED)
+ * Copyright: © 2025 BAEB90, LLC
+ * Author: DZ Zweigle
+ * Date: 2025-09-24
+ * updated 2025-09-24
  * 
- * This version uses Token Metadata standard for full Solana Explorer compatibility:
- * - Symbol displays properly
- * - All metadata attributes visible
- * - Creator information shown
- * - Soul-Bound through proper configuration
- * - Burnable by authority
+ * This source code is subject to terms and conditions of the BAEB90, LLC .
+ * By viewing and/or using this source code, in any fashion or derivative, you are agreeing to be bound by the terms of the License.
+ * You must not remove nor alter this notice from this software.
+ * All rights reserved.  Enforcement in accordance with US Federal and the State of Texas laws and rights
+ * 
+ * License and Logic is proprietary and protected by 11 provisional Patents at the time of this writing 
+ * 
+ * @fileoverview This script automates the creation of a Soul-Bound Token (SBT)
+ * on the Solana blockchain using the Metaplex Token Metadata Standard.
+ * The SBT is configured to be non-transferable, ensuring its "soul-bound"
+ * nature, while also being burnable by the issuing authority. This setup is
+ * ideal for on-chain credentials, membership passes, or governance rights
+ * that should not be tradable.
  */
 
+// ============================================================================
+// LIBRARY IMPORTS
+// ============================================================================
+// @solana/web3.js is the core Solana library for direct blockchain interaction,
+// including checking balances and requesting airdrops.
 import {
     LAMPORTS_PER_SOL,
     Connection,
@@ -17,6 +32,8 @@ import {
     Keypair,
 } from '@solana/web3.js';
 
+// The Umi framework simplifies interaction with Metaplex programs and is used
+// here for creating the NFT and managing keypair identities.
 import { createUmi } from '@metaplex-foundation/umi-bundle-defaults';
 import { keypairIdentity, generateSigner, signerIdentity } from '@metaplex-foundation/umi';
 import { 
@@ -26,20 +43,33 @@ import {
 } from '@metaplex-foundation/mpl-token-metadata';
 
 // ============================================================================
-// Configuration
+// CONFIGURATION - UPDATE THESE VALUES
 // ============================================================================
 
+// Replace with proper devnet, testnet, mainnet
+const BLOCKCHAIN_ENV = 'devnet';
+
+// Replace with your GitHub username and repository name where the metadata.json is hosted.
+// The script will construct the URI from these values.
 const GITHUB_USERNAME = 'denniszweigle';
 const GITHUB_REPO = 'solana-sbt-assets';
 const METADATA_FILENAME = 'metadata.json';
 
-// Reuse existing wallet with funds (replace with your secret key)
-const REUSE_WALLET_SECRET_KEY = [62,185,252,22,179,45,196,100,94,249,118,123,201,172,42,133,178,248,5,207,160,203,53,208,197,114,241,31,31,207,97,49,32,141,227,14,235,10,164,248,165,7,227,218,153,163,176,178,154,4,247,163,85,41,230,195,207,155,42,182,185,23,253,68];
+// Paste the secret key array of an existing wallet with funds.
+// NOTE: For production, store this securely in an environment variable.
+const REUSE_WALLET_SECRET_KEY = [];
 
 // ============================================================================
-// Helper Functions
+// HELPER FUNCTIONS
 // ============================================================================
 
+/**
+ * Checks the SOL balance for a given public key and logs it to the console.
+ * @param {Connection} connection - The Solana Web3.js Connection object.
+ * @param {PublicKey} publicKey - The public key of the account to check.
+ * @param {string} label - A descriptive label for the log output.
+ * @returns {Promise<{balance: number, solBalance: number}>} - The account balance in lamports and SOL.
+ */
 async function checkBalance(connection, publicKey, label = "Balance") {
     try {
         const balance = await connection.getBalance(publicKey);
@@ -52,6 +82,14 @@ async function checkBalance(connection, publicKey, label = "Balance") {
     }
 }
 
+/**
+ * Ensures a wallet has a sufficient SOL balance for transactions, performing an airdrop if needed.
+ * This is for development purposes only and will not work on mainnet.
+ * @param {Connection} connection - The Solana Web3.js Connection object.
+ * @param {PublicKey} publicKey - The public key of the account to fund.
+ * @param {number} requiredSol - The minimum required balance in SOL.
+ * @returns {Promise<boolean>} - True if the balance is sufficient, false otherwise.
+ */
 async function ensureSufficientBalance(connection, publicKey, requiredSol = 0.02) {
     console.log(`🔍 Ensuring wallet has at least ${requiredSol} SOL...`);
     
@@ -66,8 +104,8 @@ async function ensureSufficientBalance(connection, publicKey, requiredSol = 0.02
     console.log('💰 Requesting additional airdrops...');
     
     try {
-        const airdropAmount = Math.max(requiredSol * 2, 1.0); // Request double what we need, minimum 1 SOL
-        console.log(`   📡 Airdrop attempt 1/1...`);
+        const airdropAmount = Math.max(requiredSol * 2, 1.0); // Request double what's needed, with a minimum of 1 SOL.
+        console.log(`    📡 Airdrop attempt 1/1...`);
         
         const airdropSignature = await connection.requestAirdrop(
             publicKey,
@@ -80,13 +118,13 @@ async function ensureSufficientBalance(connection, publicKey, requiredSol = 0.02
             ...latestBlockhash,
         });
         
-        console.log(`   ✅ Airdrop confirmed! Received ${airdropAmount} SOL`);
+        console.log(`    ✅ Airdrop confirmed! Received ${airdropAmount} SOL`);
         
-        // Wait a moment for balance to update
+        // Wait briefly for the balance to update on the network.
         await new Promise(resolve => setTimeout(resolve, 2000));
         
     } catch (error) {
-        console.log(`   ❌ Airdrop 1 failed: ${error.message}`);
+        console.log(`    ❌ Airdrop failed: ${error.message}`);
     }
     
     const { solBalance: finalBalance } = await checkBalance(connection, publicKey, "Final Balance");
@@ -100,26 +138,31 @@ async function ensureSufficientBalance(connection, publicKey, requiredSol = 0.02
     }
 }
 
+/**
+ * Creates the Soul-Bound Token with a retry mechanism.
+ * @param {Umi} umi - The Umi client.
+ * @param {string} metadataUri - The URI pointing to the token's metadata.
+ * @param {PublicKey} payerKeypair - The keypair of the payer/authority.
+ * @param {number} maxAttempts - The maximum number of retry attempts.
+ * @returns {Promise<{signature: Uint8Array, mintAddress: PublicKey, success: boolean}>}
+ * @throws {Error} - Throws if the creation fails after all attempts.
+ */
 async function createSBTWithRetry(umi, metadataUri, payerKeypair, maxAttempts = 3) {
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
         try {
-            console.log(`   🎯 Attempt ${attempt}/${maxAttempts}...`);
+            console.log(`    🎯 Attempt ${attempt}/${maxAttempts}...`);
             
-            // Generate mint keypair
+            // `generateSigner` creates a new keypair that will be the mint account for the NFT.
             const mint = generateSigner(umi);
-            console.log(`   🎯 NFT Mint Address: ${mint.publicKey}`);
+            console.log(`    🎯 NFT Mint Address: ${mint.publicKey}`);
             
-            // Create NFT with Token Metadata standard
-            // Soul-Bound behavior is achieved through:
-            // 1. Setting freeze authority to the creator (prevents transfers)
-            // 2. Using proper token standard configuration
-            // 3. Metadata configuration that indicates non-transferable nature
+            // The `createNft` instruction is the core of this script.
             const createTx = await createNft(umi, {
                 mint,
                 name: 'Proof of Governance',
                 symbol: 'POG',
                 uri: metadataUri,
-                sellerFeeBasisPoints: 0, // 0% royalties
+                sellerFeeBasisPoints: 0, // 0% royalties.
                 creators: [
                     {
                         address: umi.identity.publicKey,
@@ -127,21 +170,22 @@ async function createSBTWithRetry(umi, metadataUri, payerKeypair, maxAttempts = 
                         share: 100,
                     },
                 ],
+                // Setting the token standard to NonFungible.
                 tokenStandard: TokenStandard.NonFungible,
-                collection: null,
-                uses: null,
-                isMutable: true, // Allow updates by authority
+                // Setting `isMutable` to `true` allows the `updateAuthority` to modify the metadata later.
+                isMutable: true, 
                 primarySaleHappened: false,
                 updateAuthority: umi.identity,
-                // The freeze authority makes this Soul-Bound
-                // Only the authority can unfreeze for transfers or burns
                 mintAuthority: umi.identity,
+                // **Crucial for Soul-Bound behavior:**
+                // Setting the `freezeAuthority` to the creator's public key
+                // prevents the token account from being transferred or traded.
                 freezeAuthority: umi.identity.publicKey,
             }).sendAndConfirm(umi);
             
-            console.log(`   ✅ Soul-Bound NFT created successfully!`);
-            console.log(`   🔒 Token is Soul-Bound through freeze authority control`);
-            console.log(`   🔥 Only the authority can burn or transfer this token`);
+            console.log(`    ✅ Soul-Bound NFT created successfully!`);
+            console.log(`    🔒 Token is Soul-Bound through freeze authority control`);
+            console.log(`    🔥 Only the authority can burn or transfer this token`);
             
             return {
                 signature: createTx.signature,
@@ -150,10 +194,10 @@ async function createSBTWithRetry(umi, metadataUri, payerKeypair, maxAttempts = 
             };
             
         } catch (error) {
-            console.log(`   ❌ Attempt ${attempt} failed: ${error.message}`);
+            console.log(`    ❌ Attempt ${attempt} failed: ${error.message}`);
             
             if (attempt < maxAttempts) {
-                console.log(`   ⏳ Waiting 5 seconds before retry...`);
+                console.log(`    ⏳ Waiting 5 seconds before retry...`);
                 await new Promise(resolve => setTimeout(resolve, 5000));
             }
         }
@@ -162,11 +206,16 @@ async function createSBTWithRetry(umi, metadataUri, payerKeypair, maxAttempts = 
     throw new Error(`Failed to create SBT after ${maxAttempts} attempts`);
 }
 
+/**
+ * A final test to verify the NFT exists and has its Soul-Bound configuration.
+ * @param {Umi} umi - The Umi client.
+ * @param {PublicKey} mintAddress - The public key of the NFT mint.
+ * @returns {Promise<boolean>} - True if the verification is successful, false otherwise.
+ */
 async function testSoulBoundBehavior(umi, mintAddress) {
     console.log('🔍 Testing Soul-Bound behavior...');
     
     try {
-        // Check if the NFT exists and has proper configuration
         const mintAccount = await umi.rpc.getAccount(mintAddress);
         
         if (mintAccount.exists) {
@@ -188,7 +237,7 @@ async function testSoulBoundBehavior(umi, mintAddress) {
 }
 
 // ============================================================================
-// Main Function
+// MAIN FUNCTION
 // ============================================================================
 
 async function main() {
@@ -196,9 +245,10 @@ async function main() {
     console.log(`📁 GitHub Username: ${GITHUB_USERNAME}`);
     console.log(`📁 Repository: ${GITHUB_REPO}`);
     
+    // Construct the metadata URI using the configured values.
     const metadataUri = `https://${GITHUB_USERNAME}.github.io/${GITHUB_REPO}/metadata/${METADATA_FILENAME}`;
     console.log(`🌐 Metadata URL: ${metadataUri}`);
-    console.log(`🌐 Network: Solana Devnet`);
+    console.log(`🌐 Network: Solana ${BLOCKCHAIN_ENV}`);
     console.log(`🔥 Soul-Bound: Yes (freeze authority controlled)`);
     console.log(`🔥 Burnable: Yes (by authority only)`);
     console.log(`📊 Standard: Token Metadata (full Explorer support)`);
@@ -209,24 +259,25 @@ async function main() {
         console.log('==========================================');
         
         // 1. Setup Umi and connection
-        console.log('🔗 Connecting to Solana Devnet...');
-        const umi = createUmi(clusterApiUrl('devnet'));
+        console.log(`🔗 Connecting to Solana ${BLOCKCHAIN_ENV}...`);
+        const umi = createUmi(clusterApiUrl(BLOCKCHAIN_ENV));
         umi.use(mplTokenMetadata());
         
-        const connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
+        const connection = new Connection(clusterApiUrl(BLOCKCHAIN_ENV), 'confirmed');
         
         // 2. Configure the Payer (Issuer with burn authority)
         console.log('👛 Setting up issuer wallet (burn authority)...');
         
         let payerKeypair;
         if (REUSE_WALLET_SECRET_KEY && REUSE_WALLET_SECRET_KEY.length > 0) {
-            console.log('   🔄 Reusing existing wallet with funds...');
+            console.log('    🔄 Reusing existing wallet with funds...');
             payerKeypair = umi.eddsa.createKeypairFromSecretKey(new Uint8Array(REUSE_WALLET_SECRET_KEY));
         } else {
-            console.log('   🆕 Generating new wallet...');
+            console.log('    🆕 Generating new wallet...');
             payerKeypair = umi.eddsa.generateKeypair();
         }
         
+        // The identity is set for both payer and signer.
         umi.use(keypairIdentity(payerKeypair));
         
         console.log(`💳 Issuer address: ${payerKeypair.publicKey}`);
@@ -257,13 +308,13 @@ async function main() {
         console.log('🎉 Soul-Bound Token created successfully!');
         console.log('==========================================');
         
-        // Convert signature to proper format for Solana Explorer
+        // Convert signature for explorer URL.
         const createSigString = typeof createTx.signature === 'string' ? createTx.signature : Buffer.from(createTx.signature).toString('hex');
         
         console.log(`🔐 Create Transaction: ${createSigString}`);
         console.log(`🆔 NFT Address: ${createTx.mintAddress}`);
-        console.log(`🌐 NFT Explorer: https://explorer.solana.com/address/${createTx.mintAddress}?cluster=devnet`);
-        console.log(`🌐 Create Tx Explorer: https://explorer.solana.com/tx/${createSigString}?cluster=devnet`);
+        console.log(`🌐 NFT Explorer: https://explorer.solana.com/address/${createTx.mintAddress}?cluster=${BLOCKCHAIN_ENV}`);
+        console.log(`🌐 Create Tx Explorer: https://explorer.solana.com/tx/${createSigString}?cluster=${BLOCKCHAIN_ENV}`);
         console.log('');
         
         // 6. Check balance after creation
@@ -282,15 +333,15 @@ async function main() {
             console.log(`🔑 Issuer Secret Key: [${Array.from(payerKeypair.secretKey)}]`);
             console.log(`🆔 NFT Address: ${createTx.mintAddress}`);
             console.log(`🔐 Create Transaction: ${createSigString}`);
-            console.log(`🌐 NFT Explorer: https://explorer.solana.com/address/${createTx.mintAddress}?cluster=devnet`);
+            console.log(`🌐 NFT Explorer: https://explorer.solana.com/address/${createTx.mintAddress}?cluster=${BLOCKCHAIN_ENV}`);
             console.log('');
             console.log('🎯 What to expect on Solana Explorer:');
-            console.log('   ✅ Symbol "POG" will be displayed');
-            console.log('   ✅ Creator information will be shown');
-            console.log('   ✅ All metadata attributes will be visible');
-            console.log('   ✅ Image will load from GitHub Pages');
-            console.log('   ✅ Token is Soul-Bound (freeze authority controlled)');
-            console.log('   ✅ Only you can burn/manage it');
+            console.log('    ✅ Symbol "POG" will be displayed');
+            console.log('    ✅ Creator information will be shown');
+            console.log('    ✅ All metadata attributes will be visible');
+            console.log('    ✅ Image will load from GitHub Pages');
+            console.log('    ✅ Token is Soul-Bound (freeze authority controlled)');
+            console.log('    ✅ Only you can burn/manage it');
         } else {
             console.log('⚠️  Soul-Bound verification had issues, but NFT was created');
         }
@@ -303,10 +354,10 @@ async function main() {
         console.log('');
         console.log('💡 Troubleshooting Steps:');
         console.log('1. Check that your GitHub Pages URLs are working:');
-        console.log('   npm run check-urls');
+        console.log('    npm run check-urls');
         console.log('2. Verify your metadata.json is valid JSON');
-        console.log('3. Check Solana devnet status: https://status.solana.com/');
-        console.log('4. Try running the script again (devnet can be unstable)');
+        console.log(`3. Check Solana ${BLOCKCHAIN_ENV} status: https://status.solana.com/`);
+        console.log(`4. Try running the script again (${BLOCKCHAIN_ENV} can be unstable)`);
         console.log('5. If balance issues persist, wait 5-10 minutes and retry');
         console.log('');
         console.log('🔍 Full error details:');
