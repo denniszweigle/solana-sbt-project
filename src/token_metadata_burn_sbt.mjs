@@ -47,8 +47,8 @@ import {
 // CONFIGURATION
 // ============================================================================
 
-// Replace with proper Devnet, Testnet, Mainnet
-const BLOCKCHAIN_ENV = 'Devnet';
+// Replace with proper devnet, testnet, mainnet
+const BLOCKCHAIN_ENV = 'devnet';
 
 
 // Paste the authority secret key from the SBT creation output.
