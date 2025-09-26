@@ -147,7 +147,7 @@ async function ensureSufficientBalance(connection, publicKey, requiredSol = 0.02
  * @returns {Promise<{signature: Uint8Array, mintAddress: PublicKey, success: boolean}>}
  * @throws {Error} - Throws if the creation fails after all attempts.
  */
-async function createSBTWithRetry(umi, metadataUri, payerKeypair, maxAttempts = 3) {
+async function createSBTWithRetry(umi, metadataUri, payerKeypair, maxAttempts = 5) {
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
         try {
             console.log(`    🎯 Attempt ${attempt}/${maxAttempts}...`);
@@ -196,9 +196,11 @@ async function createSBTWithRetry(umi, metadataUri, payerKeypair, maxAttempts = 
         } catch (error) {
             console.log(`    ❌ Attempt ${attempt} failed: ${error.message}`);
             
-            if (attempt < maxAttempts) {
-                console.log(`    ⏳ Waiting 5 seconds before retry...`);
-                await new Promise(resolve => setTimeout(resolve, 5000));
+            // each attempt, the wait time increase by 5 seconds.
+            if (attempt <= maxAttempts) {
+                const retryDelay = attempt * 5000;
+                console.log(`    ⏳ Waiting ${retryDelay / 1000} seconds before retry...`);
+                await new Promise(resolve => setTimeout(resolve, retryDelay));
             }
         }
     }
